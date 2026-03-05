@@ -17,7 +17,7 @@ async def main():
     dp.startup.register(start_bot)
     dp.include_routers(
         start.router,
-        # tasks_router.router,
+        tasks_router.router,
 
     )
 
