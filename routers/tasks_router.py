@@ -9,7 +9,7 @@ from utils.states import BotStates
 
 router = Router()
 
-@router.message()
+@router.message(F.text)
 async def chat(message: Message, state: FSMContext):
 
     response = await ask_backend(
