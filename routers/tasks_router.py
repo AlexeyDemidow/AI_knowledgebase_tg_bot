@@ -1,7 +1,9 @@
-from aiogram import Router
+import aiohttp
+from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from bot_settings import config
 from handlers.tasks_handler import ask_backend
 from utils.states import BotStates
 
