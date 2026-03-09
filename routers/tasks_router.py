@@ -12,6 +12,13 @@ router = Router()
 @router.message(F.text)
 async def chat(message: Message, state: FSMContext):
 
+    await message.bot.send_chat_action(
+        chat_id=message.chat.id,
+        action="typing"
+    )
+
+    username = message.from_user.username or "unknown"
+
     response = await ask_backend(
         tg_id=message.from_user.id,
         username=message.from_user.username,
