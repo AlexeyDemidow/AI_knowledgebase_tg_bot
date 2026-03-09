@@ -23,3 +23,18 @@ async def cmd_start(message: Message, state: FSMContext):
     await message.answer(f'Ваш ID: {str(user_id)}')
     await message.answer(f'Ваш юзернейм: {str(user_name)}')
     await state.set_state(BotStates.start)
+
+
+@router.message(Command("add_doc"))
+async def cmd_add_doc(message: Message, state: FSMContext):
+
+    text = (
+        "📄 Отправьте документ для загрузки.\n\n"
+        "Поддерживаются файлы:\n"
+        "• PDF\n"
+        "• DOCX\n"
+        "• TXT"
+    )
+
+    await message.answer(text)
+    await state.set_state(BotStates.add_document)
