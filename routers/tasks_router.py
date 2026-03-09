@@ -31,3 +31,39 @@ async def chat(message: Message, state: FSMContext):
         await message.answer("⚠️ Сервер временно недоступен")
 
     await state.set_state(BotStates.start)
+
+
+
+@router.message(F.document)
+async def handle_document(message: Message):
+
+    tg_id = message.from_user.id
+    username = message.from_user.username
+
+    document = message.document
+    file_name = document.file_name
+
+    # получаем файл
+
+    data = aiohttp.FormData()
+    data.add_field("tg_id", str(tg_id))
+    data.add_field("username", username if username else "unknown")
+
+    file = await message.bot.get_file(document.file_id)
+    file_obj = await message.bot.download_file(file.file_path)
+
+    data.add_field(
+        "file",
+        file_obj,
+        filename=file_name
+    )
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(config.url + 'add_document/', data=data) as resp:
+            result = await resp.json()
+            print(result)
+
+    if result["success"]:
+        await message.answer("✅ Документ успешно загружен")
+    else:
+        await message.answer(f"❌ Ошибка: {result['errorMsg']}")
