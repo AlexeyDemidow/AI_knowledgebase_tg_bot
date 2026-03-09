@@ -21,9 +21,13 @@ async def chat(message: Message, state: FSMContext):
 
     response = await ask_backend(
         tg_id=message.from_user.id,
-        username=message.from_user.username,
+        username=username,
         message=message.text
     )
 
-    await message.answer(response["answer"])
+    if response.get("success"):
+        await message.answer(response["answer"])
+    else:
+        await message.answer("⚠️ Сервер временно недоступен")
+
     await state.set_state(BotStates.start)
