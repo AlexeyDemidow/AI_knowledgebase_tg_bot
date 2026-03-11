@@ -9,6 +9,22 @@ from utils.states import BotStates
 
 router = Router()
 
+
+@router.message(F.text == "💬 Обычный чат")
+async def set_chat_mode(message: Message, state: FSMContext):
+
+    await state.update_data(chat_mode="chat")
+
+    await message.answer("Режим: 💬 обычный чат")
+
+
+@router.message(F.text == "📄 Чат по документам")
+async def set_doc_mode(message: Message, state: FSMContext):
+
+    await state.update_data(chat_mode="document")
+    await message.answer("Режим: 📄 вопросы по документам")
+
+
 @router.message(F.text)
 async def chat(message: Message, state: FSMContext):
 
