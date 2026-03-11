@@ -35,10 +35,13 @@ async def chat(message: Message, state: FSMContext):
 
     username = message.from_user.username or "unknown"
 
+    data = await state.get_data()
+    chat_mode = data.get("chat_mode")
     response = await ask_backend(
         tg_id=message.from_user.id,
         username=username,
-        message=message.text
+        message=message.text,
+        chat_mode=chat_mode,
     )
 
     if response.get("success"):
@@ -47,7 +50,6 @@ async def chat(message: Message, state: FSMContext):
         await message.answer("⚠️ Сервер временно недоступен")
 
     await state.set_state(BotStates.start)
-
 
 
 @router.message(F.document)
@@ -77,7 +79,6 @@ async def handle_document(message: Message):
     async with aiohttp.ClientSession() as session:
         async with session.post(config.url + 'add_document/', data=data) as resp:
             result = await resp.json()
-            print(result)
 
     if result["success"]:
         await message.answer("✅ Документ успешно загружен")
