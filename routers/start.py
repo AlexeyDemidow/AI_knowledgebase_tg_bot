@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from keyboards.mode_keyboard import mode_keyboard
 from utils.states import BotStates
 from handlers.tasks_handler import create_user
 
@@ -20,9 +21,13 @@ async def cmd_start(message: Message, state: FSMContext):
     await create_user(tg_id=str(user_id), username=user_name)
 
     await message.answer(text)
-    await message.answer(f'Ваш ID: {str(user_id)}')
-    await message.answer(f'Ваш юзернейм: {str(user_name)}')
-    await state.set_state(BotStates.start)
+    await state.update_data(chat_mode="chat")
+
+    await message.answer(
+        "Выберите режим работы:",
+        reply_markup=mode_keyboard
+    )
+    # await state.set_state(BotStates.start)
 
 
 @router.message(Command("add_doc"))
