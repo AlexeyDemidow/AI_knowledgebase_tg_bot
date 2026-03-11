@@ -13,11 +13,12 @@ async def create_user(tg_id: str, username: str):
             return await response.json()
 
 
-async def ask_backend(tg_id, username, message):
+async def ask_backend(tg_id, username, message, chat_mode):
     payload = {
         "tg_id": str(tg_id),
         "username": username,
-        "message": message
+        "message": message,
+        "chat_mode": chat_mode,
     }
 
     async with aiohttp.ClientSession() as session:
