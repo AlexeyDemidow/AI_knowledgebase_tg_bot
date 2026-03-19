@@ -24,3 +24,14 @@ async def ask_backend(tg_id, username, message, chat_mode):
     async with aiohttp.ClientSession() as session:
         async with session.post(config.url + 'chat/', json=payload) as resp:
             return await resp.json()
+
+
+async def show_docs(tg_id: str, username: str):
+    async with aiohttp.ClientSession() as session:
+        data = {
+            'tg_id': str(tg_id),
+            'username': username,
+        }
+
+        async with session.get(config.url + 'show_docs/', params=data) as resp:
+            return await resp.json()
