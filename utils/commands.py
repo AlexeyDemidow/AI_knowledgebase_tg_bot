@@ -12,6 +12,10 @@ async def set_commands(bot: Bot):
             command='add_doc',
             description='Добавить документ',
         ),
+        BotCommand(
+            command='show_docs',
+            description='Показать документы',
+        ),
 
     ]
 
