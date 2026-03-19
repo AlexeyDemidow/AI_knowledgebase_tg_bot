@@ -13,7 +13,7 @@ async def create_user(tg_id: str, username: str):
             return await response.json()
 
 
-async def ask_backend(tg_id, username, message, chat_mode):
+async def ask_backend(tg_id: str, username: str, message: str, chat_mode: str):
     payload = {
         "tg_id": str(tg_id),
         "username": username,
