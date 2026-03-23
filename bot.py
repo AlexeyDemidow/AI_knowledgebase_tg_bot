@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from handlers.signals import start_bot, stop_bot
+from utils import callbacks
 from utils.commands import set_commands
 from bot_settings import config
 from routers import start, tasks_router
@@ -18,7 +19,7 @@ async def main():
     dp.include_routers(
         start.router,
         tasks_router.router,
-
+        callbacks.router,
     )
 
     dp.shutdown.register(stop_bot)
