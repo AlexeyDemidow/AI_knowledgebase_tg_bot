@@ -2,8 +2,9 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from keyboards.mode_keyboard import mode_keyboard
+from keyboards.keyboards import mode_keyboard
 from utils.states import BotStates
 from handlers.tasks_handler import create_user, show_docs
 
@@ -46,7 +47,7 @@ async def cmd_add_doc(message: Message, state: FSMContext):
 
 
 @router.message(Command("show_docs"))
-async def cmd_add_doc(message: Message, state: FSMContext):
+async def cmd_show_docs(message: Message, state: FSMContext):
     user_id = message.from_user.id
     user_name = message.from_user.username
 
@@ -58,11 +59,22 @@ async def cmd_add_doc(message: Message, state: FSMContext):
     docs = response.get("docs", [])
 
     if not docs:
-        text = "📄 У тебя пока нет документов"
-    else:
-        text = "📄 Твои документы:\n\n"
-        for doc in docs[:10]:
-            text += f"• {doc['name']}\n"
+        await message.answer("📄 У тебя пока нет документов")
+        return
 
-    await message.answer(text)
-    await state.set_state(BotStates.add_document)
+    text = "📄 Твои документы:\n\n"
+
+    kb = InlineKeyboardBuilder()
+
+    for doc in docs[:10]:
+        kb.button(
+            text=f"{doc['id']} - {doc['name']}",
+            callback_data=f"doc_{doc['id']}"
+        )
+
+    kb.adjust(1)
+
+    await message.answer(
+        text,
+        reply_markup=kb.as_markup()
+    )
