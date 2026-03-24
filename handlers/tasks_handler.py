@@ -35,3 +35,15 @@ async def show_docs(tg_id: str, username: str):
 
         async with session.get(config.url + 'show_docs/', params=data) as resp:
             return await resp.json()
+
+
+async def del_doc(tg_id: str, username: str, doc_id: str):
+    async with aiohttp.ClientSession() as session:
+        data = {
+            'tg_id': str(tg_id),
+            'username': username,
+            'doc_id': doc_id,
+        }
+
+        async with session.delete(config.url + 'delete_doc/', params=data) as resp:
+            return await resp.json()
