@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from handlers.tasks_handler import show_docs
+from handlers.tasks_handler import show_docs, del_doc
 
 router = Router()
 
@@ -24,20 +24,23 @@ async def handle_doc(callback: CallbackQuery):
     )
 
 
-@router.callback_query(lambda c: c.data.startswith("download_"))
-async def download_doc(callback: CallbackQuery):
-    doc_id = callback.data.split("_")[1]
-
-    await callback.answer()
-    await callback.message.answer(f"📥 Скачивание документа {doc_id}")
-
-
 @router.callback_query(lambda c: c.data.startswith("delete_"))
 async def delete_doc(callback: CallbackQuery):
+    user_id = str(callback.from_user.id)
+    user_name = callback.from_user.username or "unknown"
     doc_id = callback.data.split("_")[1]
 
+    kb = InlineKeyboardBuilder()
+    kb.button(text="⬅️ Назад", callback_data="back_to_docs")
+    kb.adjust(1)
+
     await callback.answer()
-    await callback.message.answer(f"🗑 Документ {doc_id} удалён")
+
+    await del_doc(user_id,user_name, doc_id)
+    await callback.message.edit_text(
+        f"🗑 Документ {doc_id} удалён",
+        reply_markup=kb.as_markup()
+    )
 
 
 @router.callback_query(lambda c: c.data == "back_to_docs")
