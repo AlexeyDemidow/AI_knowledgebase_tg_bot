@@ -1,4 +1,5 @@
 from aiogram import Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -13,10 +14,10 @@ async def handle_doc(callback: CallbackQuery):
     await callback.answer()
 
     kb = InlineKeyboardBuilder()
-    kb.button(text="📥 Скачать", callback_data=f"download_{doc_id}")
+    kb.button(text="Выбрать для работы", callback_data=f"choose_{doc_id}")
     kb.button(text="🗑 Удалить", callback_data=f"delete_{doc_id}")
     kb.button(text="⬅️ Назад", callback_data="back_to_docs")
-    kb.adjust(2, 1)
+    kb.adjust(1, 1)
 
     await callback.message.edit_text(
         f"📄 Документ {doc_id}",
@@ -42,6 +43,20 @@ async def delete_doc(callback: CallbackQuery):
         reply_markup=kb.as_markup()
     )
 
+
+@router.callback_query(lambda c: c.data.startswith("choose_"))
+async def choose_doc(callback: CallbackQuery, state: FSMContext):
+    doc_id = callback.data.split("_")[1]
+
+    await state.update_data(
+        selected_doc=doc_id,
+        chat_mode="document"
+    )
+
+    await callback.answer()
+    await callback.message.answer(
+        f"📄 Документ {doc_id} выбран\nЗадайте вопрос"
+    )
 
 @router.callback_query(lambda c: c.data == "back_to_docs")
 async def back_to_docs(callback: CallbackQuery):
