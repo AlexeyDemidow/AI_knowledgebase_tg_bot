@@ -59,21 +59,26 @@ async def set_doc_mode(message: Message, state: FSMContext):
 
 @router.message(F.text)
 async def chat(message: Message, state: FSMContext):
+    data = await state.get_data()
+    chat_mode = data.get("chat_mode")
+    selected_doc = data.get("selected_doc")
+    username = message.from_user.username or "unknown"
+
+    if chat_mode == "document" and not selected_doc:
+        await message.answer("❗ Сначала выбери документ")
+        return
 
     await message.bot.send_chat_action(
         chat_id=message.chat.id,
         action="typing"
     )
 
-    username = message.from_user.username or "unknown"
-
-    data = await state.get_data()
-    chat_mode = data.get("chat_mode")
     response = await ask_backend(
         tg_id=message.from_user.id,
         username=username,
         message=message.text,
         chat_mode=chat_mode,
+        doc_id=selected_doc,
     )
 
     if response.get("success"):
@@ -81,7 +86,6 @@ async def chat(message: Message, state: FSMContext):
     else:
         await message.answer("⚠️ Сервер временно недоступен")
 
-    await state.set_state(BotStates.start)
 
 
 @router.message(F.document)
