@@ -2,9 +2,10 @@ import aiohttp
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot_settings import config
-from handlers.tasks_handler import ask_backend
+from handlers.tasks_handler import ask_backend, show_docs
 from utils.states import BotStates
 
 router = Router()
@@ -14,7 +15,6 @@ router = Router()
 async def set_chat_mode(message: Message, state: FSMContext):
 
     await state.update_data(chat_mode="chat")
-
     await message.answer("Режим: 💬 обычный чат")
 
 
@@ -23,6 +23,38 @@ async def set_doc_mode(message: Message, state: FSMContext):
 
     await state.update_data(chat_mode="document")
     await message.answer("Режим: 📄 вопросы по документам")
+    await message.answer("Выберите документ для работы 📄")
+
+    tg_id = message.from_user.id
+    username = message.from_user.username
+
+    response = await show_docs(
+        tg_id=str(tg_id),
+        username=username
+    )
+
+    docs = response.get("docs", [])
+
+    if not docs:
+        await message.answer("📄 У тебя пока нет документов")
+        await state.update_data(chat_mode="chat")
+        await message.answer("Режим: 💬 обычный чат")
+        return
+
+    kb = InlineKeyboardBuilder()
+
+    for doc in docs[:10]:
+        kb.button(
+            text=f"{doc['id']} - {doc['name']}",
+            callback_data=f"doc_{doc['id']}"
+        )
+
+    kb.adjust(1)
+
+    await message.answer(
+        "📄 Твои документы:",
+        reply_markup=kb.as_markup()
+    )
 
 
 @router.message(F.text)
