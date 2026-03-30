@@ -57,7 +57,38 @@ async def set_doc_mode(message: Message, state: FSMContext):
     )
 
 
-@router.message(F.text)
+@router.message(BotStates.add_document_by_url)
+async def handle_url(message: Message, state: FSMContext):
+    url = message.text.strip()
+
+    if not url.startswith("http"):
+        await message.answer("❌ Отправьте корректную ссылку")
+        return
+
+    tg_id = message.from_user.id
+    username = message.from_user.username
+
+    url = message.text.strip()
+
+    data = aiohttp.FormData()
+    data.add_field("tg_id", str(tg_id))
+    data.add_field("username", username if username else "unknown")
+    data.add_field("file_url", url)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(config.url + 'add_document_by_url/', data=data) as resp:
+            result = await resp.json()
+
+    if result["success"]:
+        await message.answer("✅ Документ по ссылке успешно загружен")
+    else:
+        await message.answer(f"❌ Ошибка: {result['errorMsg']}")
+
+    await state.clear()
+
+
+
+@router.message(F.text, ~F.state(BotStates.add_document_by_url))
 async def chat(message: Message, state: FSMContext):
     data = await state.get_data()
     chat_mode = data.get("chat_mode")
@@ -97,8 +128,6 @@ async def handle_document(message: Message):
     document = message.document
     file_name = document.file_name
 
-    # получаем файл
-
     data = aiohttp.FormData()
     data.add_field("tg_id", str(tg_id))
     data.add_field("username", username if username else "unknown")
@@ -120,3 +149,5 @@ async def handle_document(message: Message):
         await message.answer("✅ Документ успешно загружен")
     else:
         await message.answer(f"❌ Ошибка: {result['errorMsg']}")
+
+
