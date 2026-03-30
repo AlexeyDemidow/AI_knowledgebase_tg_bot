@@ -14,7 +14,7 @@ async def handle_doc(callback: CallbackQuery):
     await callback.answer()
 
     kb = InlineKeyboardBuilder()
-    kb.button(text="Выбрать для работы", callback_data=f"choose_{doc_id}")
+    kb.button(text="✅ Выбрать для работы", callback_data=f"choose_{doc_id}")
     kb.button(text="🗑 Удалить", callback_data=f"delete_{doc_id}")
     kb.button(text="⬅️ Назад", callback_data="back_to_docs")
     kb.adjust(1, 1)
@@ -55,7 +55,7 @@ async def choose_doc(callback: CallbackQuery, state: FSMContext):
 
     await callback.answer()
     await callback.message.answer(
-        f"📄 Документ {doc_id} выбран\nЗадайте вопрос"
+        f"📄 Документ {doc_id} выбран\n❔Задайте вопрос"
     )
 
 @router.callback_query(lambda c: c.data == "back_to_docs")
