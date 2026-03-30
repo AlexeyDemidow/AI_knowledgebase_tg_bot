@@ -28,7 +28,7 @@ async def cmd_start(message: Message, state: FSMContext):
         "Выберите режим работы:",
         reply_markup=mode_keyboard
     )
-    # await state.set_state(BotStates.start)
+    await state.set_state(BotStates.start)
 
 
 @router.message(Command("add_doc"))
@@ -44,6 +44,21 @@ async def cmd_add_doc(message: Message, state: FSMContext):
 
     await message.answer(text)
     await state.set_state(BotStates.add_document)
+
+
+@router.message(Command("add_doc_by_url"))
+async def cmd_add_doc_by_url(message: Message, state: FSMContext):
+
+    text = (
+        "📄 Отправьте ссылку на документ для загрузки.\n\n"
+        "Поддерживаются файлы:\n"
+        "• PDF\n"
+        "• DOCX\n"
+        "• TXT"
+    )
+
+    await message.answer(text)
+    await state.set_state(BotStates.add_document_by_url)
 
 
 @router.message(Command("show_docs"))
