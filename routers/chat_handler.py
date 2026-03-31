@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot_settings import config
-from handlers.tasks_handler import ask_backend, show_docs
+from service.api_client import ask_backend, show_docs, add_doc_by_url, add_doc
 from utils.states import BotStates
 
 router = Router()
@@ -87,7 +87,6 @@ async def handle_url(message: Message, state: FSMContext):
     await state.clear()
 
 
-
 @router.message(F.text, ~F.state(BotStates.add_document_by_url))
 async def chat(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -118,7 +117,6 @@ async def chat(message: Message, state: FSMContext):
         await message.answer("⚠️ Сервер временно недоступен")
 
 
-
 @router.message(F.document)
 async def handle_document(message: Message):
 
@@ -141,13 +139,7 @@ async def handle_document(message: Message):
         filename=file_name
     )
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(config.url + 'add_document/', data=data) as resp:
-            result = await resp.json()
-
     if result["success"]:
         await message.answer("✅ Документ успешно загружен")
     else:
         await message.answer(f"❌ Ошибка: {result['errorMsg']}")
-
-
