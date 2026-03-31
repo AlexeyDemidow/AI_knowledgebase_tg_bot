@@ -69,3 +69,16 @@ async def add_doc(tg_id: int, username: str, document, file_name: str, message):
             result = await resp.json()
 
     return result
+
+
+async def add_doc_by_url(tg_id: int, username: str, url: str):
+    data = aiohttp.FormData()
+    data.add_field("tg_id", str(tg_id))
+    data.add_field("username", username if username else "unknown")
+    data.add_field("file_url", url)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(config.url + 'add_document_by_url/', data=data) as resp:
+            result = await resp.json()
+
+    return result
