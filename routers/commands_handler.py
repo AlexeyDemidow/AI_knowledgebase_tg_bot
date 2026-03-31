@@ -6,7 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from keyboards.keyboards import mode_keyboard
 from utils.states import BotStates
-from handlers.tasks_handler import create_user, show_docs
+from service.api_client import create_user, show_docs
 
 router = Router()
 
