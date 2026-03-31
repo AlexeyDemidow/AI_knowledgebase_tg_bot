@@ -123,17 +123,12 @@ async def handle_document(message: Message):
     document = message.document
     file_name = document.file_name
 
-    data = aiohttp.FormData()
-    data.add_field("tg_id", str(tg_id))
-    data.add_field("username", username if username else "unknown")
-
-    file = await message.bot.get_file(document.file_id)
-    file_obj = await message.bot.download_file(file.file_path)
-
-    data.add_field(
-        "file",
-        file_obj,
-        filename=file_name
+    result = await add_doc(
+        tg_id=tg_id,
+        username=username,
+        document=document,
+        file_name=file_name,
+        message=message
     )
 
     if result["success"]:
