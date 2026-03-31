@@ -70,14 +70,11 @@ async def handle_url(message: Message, state: FSMContext):
 
     url = message.text.strip()
 
-    data = aiohttp.FormData()
-    data.add_field("tg_id", str(tg_id))
-    data.add_field("username", username if username else "unknown")
-    data.add_field("file_url", url)
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(config.url + 'add_document_by_url/', data=data) as resp:
-            result = await resp.json()
+    result = await add_doc_by_url(
+        tg_id=tg_id,
+        username=username,
+        url=url
+    )
 
     if result["success"]:
         await message.answer("✅ Документ по ссылке успешно загружен")
