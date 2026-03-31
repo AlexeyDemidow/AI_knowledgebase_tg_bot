@@ -48,3 +48,24 @@ async def del_doc(tg_id: str, username: str, doc_id: str):
 
         async with session.delete(config.url + 'delete_doc/', params=data) as resp:
             return await resp.json()
+
+
+async def add_doc(tg_id: int, username: str, document, file_name: str, message):
+    data = aiohttp.FormData()
+    data.add_field("tg_id", str(tg_id))
+    data.add_field("username", username if username else "unknown")
+
+    file = await message.bot.get_file(document.file_id)
+    file_obj = await message.bot.download_file(file.file_path)
+
+    data.add_field(
+        "file",
+        file_obj,
+        filename=file_name
+    )
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(config.url + 'add_document/', data=data) as resp:
+            result = await resp.json()
+
+    return result
