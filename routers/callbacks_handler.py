@@ -3,9 +3,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from handlers.tasks_handler import show_docs, del_doc
+from service.api_client import show_docs, del_doc
 
 router = Router()
+
 
 @router.callback_query(lambda c: c.data.startswith("doc_"))
 async def handle_doc(callback: CallbackQuery):
@@ -57,6 +58,7 @@ async def choose_doc(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         f"📄 Документ {doc_id} выбран\n❔Задайте вопрос"
     )
+
 
 @router.callback_query(lambda c: c.data == "back_to_docs")
 async def back_to_docs(callback: CallbackQuery):
