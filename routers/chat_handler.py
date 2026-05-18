@@ -70,6 +70,8 @@ async def handle_url(message: Message, state: FSMContext):
 
     url = message.text.strip()
 
+    await message.answer("Начинаю загрузку документа...")
+
     result = await add_doc_by_url(
         tg_id=tg_id,
         username=username,
@@ -122,6 +124,8 @@ async def handle_document(message: Message):
 
     document = message.document
     file_name = document.file_name
+
+    await message.answer("Начинаю загрузку документа...")
 
     result = await add_doc(
         tg_id=tg_id,
